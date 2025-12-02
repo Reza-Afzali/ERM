@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Alpha Hospital - Our Commitment</title>
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-content">
+        <a href="index.html" class="logo">
+          <img
+            src="images/logo.png"
+            alt="Alpha Hospital Logo"
+            class="logo-icon"
+          />
+          Alpha Hospital
+        </a>
+
+        <nav class="nav-menu" aria-label="Primary navigation">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="about.html" class="nav-link active">About Us</a>
+          <a href="#" class="nav-link">Services</a>
+          <a href="#" class="nav-link">Departments</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+
+        <a href="#" class="btn btn-primary btn-book-appointment cta-btn-desktop"
+          >Book Appointment</a
+        >
+
+        <button
+          class="mobile-menu-btn"
+          id="mobileMenuBtn"
+          aria-label="Open menu"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div id="mobileNav" class="mobile-nav" aria-hidden="true">
+        <div class="menu-links">
+          <a href="index.html">Home</a>
+          <a href="about.html">About Us</a>
+          <a href="#">Services</a>
+          <a href="#">Departments</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="full-hero" style="height: 300px; margin-bottom: -100px">
+      <div class="hero-content container">
+        <h1 class="hero-main-title" style="font-size: 3rem">
+          Our Commitment to You
+        </h1>
+        <p class="hero-main-subtitle">
+          Learn about our history, mission, and the dedicated team that makes
+          Alpha Hospital a beacon of health.
+        </p>
+      </div>
+    </section>
+
+    <main class="container main-content">
+      <section class="main-card">
+        <div class="hero-grid" style="grid-template-columns: 1fr; gap: 2rem">
+          <div class="hero-left">
+            <h2 class="hero-title">A Legacy of Care and Innovation</h2>
+            <p class="hero-lead">
+              Founded in 1998, Alpha Hospital has grown from a community clinic
+              into a leading regional medical center. Our foundation is built on
+              the belief that advanced medical science and deep compassion must
+              go hand-in-hand.
+            </p>
+
+            <div
+              class="cards-grid"
+              style="grid-template-columns: 1fr 1fr; margin-top: 2rem"
+            >
+              <article class="info-card">
+                <h3>Our Mission</h3>
+                <p>
+                  To provide exceptional, patient-centered care through clinical
+                  excellence, innovative research, and a commitment to the
+                  health of our diverse community.
+                </p>
+              </article>
+              <article class="info-card">
+                <h3>Our Vision</h3>
+                <p>
+                  To be recognized as the regional leader in compassionate and
+                  integrated healthcare services, setting the standard for
+                  patient safety and medical advancement.
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ROLES & FUNCTION SECTION - Refactored to match the image -->
+      <section class="secondary">
+        <div
+          class="hero-grid"
+          style="grid-template-columns: 1fr 1fr; gap: 2rem"
+        >
+          <!-- Left Column: Roles List -->
+          <div class="roles-column">
+            <h2 class="section-title-left">Roles & Function</h2>
+            <div class="roles-list">
+              <article class="role-item">
+                <h3 class="role-title">Primary Care</h3>
+                <p class="role-description">
+                  Providing routine check-ups, health assessments, and ongoing
+                  management of chronic conditions.
+                </p>
+              </article>
+
+              <article class="role-item">
+                <h3 class="role-title">Diagnosis and Treatment</h3>
+                <p class="role-description">
+                  Identifying and treating acute and chronic illnesses, ensuring
+                  timely and effective care.
+                </p>
+              </article>
+
+              <article class="role-item">
+                <h3 class="role-title">Preventive Care</h3>
+                <p class="role-description">
+                  Offering vaccinations, health screenings, and lifestyle advice
+                  to prevent disease and promote health.
+                </p>
+              </article>
+
+              <article class="role-item">
+                <h3 class="role-title">Referral Coordination</h3>
+                <p class="role-description">
+                  Coordinating with specialists and other departments to ensure
+                  comprehensive care for complex conditions.
+                </p>
+              </article>
+            </div>
+          </div>
+
+          <!-- Right Column: Description and Image (Matching Image Layout) -->
+          <div class="image-text-column">
+            <p class="department-description">
+              The General Medicine department at MediHealth serves as the
+              foundation of our comprehensive healthcare services. We focus on
+              the prevention, diagnosis, and treatment of a wide range of
+              conditions affecting adults and children. Our dedicated team of
+              general practitioners and specialists is committed to providing
+              high-quality, patient-centered care to ensure the well-being of
+              every individual.
+            </p>
+
+            <div class="department-image-container">
+              <!-- Using the existing image path but styled with new CSS -->
+              <img
+                src="images/img02.jpg"
+                alt="A team of doctors reviewing patient documents together."
+                class="department-image"
+              />
+            </div>
+          </div>
+          <!-- END Refactored Roles & Function Column -->
+        </div>
+      </section>
+      <section class="secondary">
+        <h2 class="section-title">Meet Our Leadership</h2>
+        <div
+          class="cards-grid"
+          style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))"
+        >
+          <article class="info-card" style="text-align: center">
+            <img
+              src="images/img06.jpg"
+              alt="Dr. Aris Thorne"
+              style="
+                border-radius: 50%;
+                width: 150px;
+                height: 150px;
+                object-fit: cover;
+                margin: 0 auto 1rem;
+              "
+            />
+            <h3>Dr. Aris Thorne</h3>
+            <p class="hero-lead">Chief of Medicine & Cardiologist</p>
+            <p style="font-size: 0.9rem; color: var(--color-text-dark)">
+              Dr. Thorne oversees all clinical practices, ensuring we maintain
+              the highest standards of medical excellence.
+            </p>
+          </article>
+
+          <article class="info-card" style="text-align: center">
+            <img
+              src="images/img07.jpg"
+              alt="Ms. Elara Vance"
+              style="
+                border-radius: 50%;
+                width: 150px;
+                height: 150px;
+                object-fit: cover;
+                margin: 0 auto 1rem;
+              "
+            />
+            <h3>Ms. Elara Vance</h3>
+            <p class="hero-lead">Chief Nursing Officer</p>
+            <p style="font-size: 0.9rem; color: var(--color-text-dark)">
+              Ms. Vance leads our dedicated nursing staff, focusing on
+              compassionate care delivery and patient well-being.
+            </p>
+          </article>
+
+          <article class="info-card" style="text-align: center">
+            <img
+              src="images/img08.jpg"
+              alt="Ms. Zuri Nandi Kamau"
+              style="
+                border-radius: 50%;
+                width: 150px;
+                height: 150px;
+                object-fit: cover;
+                margin: 0 auto 1rem;
+              "
+            />
+            <h3>Ms. Zuri Nandi Kamau</h3>
+            <p class="hero-lead">Hospital Administrator</p>
+            <p style="font-size: 0.9rem; color: var(--color-text-dark)">
+              Ms. Kamau manages the daily operations, ensuring our facilities
+              and resources support effective patient service.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" aria-label="Footer">
+      <div class="container footer-grid">
+        <div>
+          <h3 class="footer-logo">Alpha Hospital</h3>
+          <p>
+            Dedicated to providing safe, compassionate, and professional
+            healthcare for our community.
+          </p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Patient Portal</a></li>
+            <li><a href="#">Billing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Departments</h4>
+          <ul>
+            <li><a href="#">Emergency</a></li>
+            <li><a href="#">Pediatrics</a></li>
+            <li><a href="#">Surgery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>123 Health Ave, Wellness City</p>
+          <p>Phone: (555) 123-4567</p>
+        </div>
+      </div>
+    </footer>
+
+    <div id="appointmentOverlay" class="appointment-overlay">
+      <div class="appointment-overlay-content">
+        <button id="closeAppointment" class="close-btn" aria-label="Close">
+          ×
+        </button>
+        <h2>Book an Appointment</h2>
+        <form class="book-form">
+          <div class="form-row">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Your name" required />
+          </div>
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Your email" required />
+          </div>
+          <div class="form-row">
+            <label for="department">Department</label>
+            <select id="department" required>
+              <option value="">--- Select Department ---</option>
+              <option>Emergency</option>
+              <option>Pediatrics</option>
+              <option>Surgery</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="date-modal">Date</label>
+            <input type="date" id="date-modal" required />
+          </div>
+          <div class="form-row">
+            <label for="time-modal">Time</label>
+            <input type="time" id="time-modal" required />
+          </div>
+          <div class="form-row">
+            <label for="phone-modal">Phone</label>
+            <input
+              type="tel"
+              id="phone-modal"
+              placeholder="(555) 555-5555"
+              required
+            />
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Book Now</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="toastNotification" class="toast">
+      Appointment requested successfully!
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
