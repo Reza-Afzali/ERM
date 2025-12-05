@@ -810,86 +810,110 @@ try {
         </button>
         <h2>Book an Appointment</h2>
         <form class="book-form" id="appointmentForm">
-          <div class="name-group">
-            <div class="form-row">
-              <label for="first-name">First Name</label>
-              <input
-                type="text"
-                id="first-name"
-                placeholder="z.B. John"
-                data-required="true"
-              />
-            </div>
-            <div class="form-row">
-              <label for="last-name">Last Name</label>
-              <input
-                type="text"
-                id="last-name"
-                placeholder="z.B. Doe"
-                data-required="true"
-              />
-            </div>
-          </div>
-          <div class="form-row">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="z.B. jdoe34@gmail.com"
-              data-required="true"
-            />
-          </div>
-          <div class="form-row">
-            <label for="phone-modal">Phone</label>
-            <input
-              type="tel"
-              id="phone-modal"
-              placeholder="(555) 555-5555"
-              data-required="true"
-            />
-          </div>
 
-          <div class="datetime-group">
-            <div class="form-row">
-              <label for="date-modal">Date</label>
-              <input type="date" id="date-modal" data-required="true" />
-            </div>
+  <div class="name-group">
+    <div class="form-row">
+      <label for="first-name">First Name *</label>
+      <input
+        type="text"
+        id="first-name"
+        name="first_name"
+        placeholder="z.B. John"
+        data-required="true"
+      />
+    </div>
 
-            <!-- Time select field -->
-            <div class="form-row">
-              <label for="time-modal">Preferred Time</label>
-              <select
-                id="time-modal"
-                name="time"
-                data-required="true"
-              ></select>
-            </div>
-          </div>
+    <div class="form-row">
+      <label for="last-name">Last Name *</label>
+      <input
+        type="text"
+        id="last-name"
+        name="last_name"
+        placeholder="z.B. Doe"
+        data-required="true"
+      />
+    </div>
+  </div>
 
-          <div class="form-row">
-            <label for="department">Department</label>
-            <select id="department" data-required="true">
-              <option value="">--- Select Department ---</option>
-              <option>Emergency</option>
-              <option>Pediatrics</option>
-              <option>Surgery</option>
-              <option>Cardiology</option>
-            </select>
-          </div>
+  <div class="form-row">
+    <label for="email">Email *</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="z.B. jdoe34@gmail.com"
+      data-required="true"
+    />
+  </div>
 
-          <div class="form-row" style="grid-column: 1 / -1">
-            <label for="message-modal">Reason for Visit</label>
-            <textarea
-              id="message-modal"
-              placeholder="Briefly describe your reason for booking this appointment."
-              data-required="true"
-            ></textarea>
-          </div>
+  <div class="form-row">
+    <label for="phone-modal">Phone *</label>
+    <input
+      type="tel"
+      id="phone-modal"
+      name="phone"
+      placeholder="(555) 555-5555"
+      data-required="true"
+    />
+  </div>
 
-          <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Book Now</button>
-          </div>
-        </form>
+  <div class="datetime-group">
+    <div class="form-row">
+      <label for="date-modal">Date *</label>
+      <input type="date" id="date-modal" name="date" data-required="true" />
+    </div>
+
+    <div class="form-row">
+      <label for="time-modal">Preferred Time *</label>
+      <select id="time-modal" name="time" data-required="true">
+        <option value="">Select time</option>
+        <option value="09:00:00">09:00 AM</option>
+        <option value="10:00:00">10:00 AM</option>
+        <option value="11:00:00">11:00 AM</option>
+        <option value="14:00:00">02:00 PM</option>
+        <option value="15:00:00">03:00 PM</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Dynamic Department -->
+  <div class="form-row">
+    <label for="department-modal">Department *</label>
+    <select id="department-modal" name="department" data-required="true">
+      <option value="">--- Select Department ---</option>
+      <?php foreach ($fachbereiche_liste as $fb): ?>
+        <option value="<?= $fb['abteilung_id'] ?>">
+          <?= htmlspecialchars($fb['name']) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+
+  <!-- Dynamic Doctors -->
+  <div class="form-row">
+    <label for="doctor-modal">Doctor *</label>
+    <select id="doctor-modal" name="doctor" data-required="true">
+      <option value="">--- Select Doctor ---</option>
+    </select>
+  </div>
+
+  <div class="form-row" style="grid-column:1/-1">
+    <label for="message-modal">Reason for Visit *</label>
+    <textarea
+      id="message-modal"
+      name="reason"
+      placeholder="Describe your reason for the appointment"
+      data-required="true"
+    ></textarea>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Book Now</button>
+  </div>
+
+</form>
+
+
       </div>
     </div>
 
@@ -898,5 +922,55 @@ try {
     </div>
 
     <script src="script.js"></script>
+    <script>
+document.getElementById("department-modal").addEventListener("change", function () {
+    let depId = this.value;
+
+    fetch("load_doctors.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "department_id=" + depId
+    })
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById("doctor-modal").innerHTML = data;
+    });
+});
+
+// --- Submit Form with Validation + DB Saving ---
+document.getElementById("appointmentForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // Keep your script.js validation system
+    const requiredFields = document.querySelectorAll("[data-required='true']");
+    for (let field of requiredFields) {
+        if (!field.value.trim()) {
+            field.classList.add("input-error");
+            return; 
+        } else {
+            field.classList.remove("input-error");
+        }
+    }
+
+    let formData = new FormData(this);
+
+    fetch("save_appointment.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(response => {
+        document.getElementById("toastNotification").textContent =
+            "Appointment booked successfully!";
+        document.getElementById("toastNotification").classList.add("show");
+
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    });
+});
+</script>
+
+
   </body>
 </html>

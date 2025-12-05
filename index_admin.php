@@ -1,5 +1,20 @@
+<?php
+require_once 'config.php';
+
+// Load departments from DB
+$fachbereiche_liste = [];
+
+try {
+    $sql_fachbereiche = "SELECT abteilung_id, name FROM abteilungen";
+    $statement = $db_verbindung->prepare($sql_fachbereiche);
+    $statement->execute();
+    $fachbereiche_liste = $statement->fetchAll();
+} catch (PDOException $e) {
+    $fehlermeldung = "ERROR loading departments: " . $e->getMessage();
+}
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -10,35 +25,68 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <script>
-      // Date calculation script remains in the head to set min/max constraints early
 
-      // Get tomorrow's date
+    <!-- PHP dropdown CSS (no design changes) -->
+    <style>
+      .nav-dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      .nav-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        min-width: 220px;
+        padding: 10px 0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        z-index: 9999;
+      }
+      .nav-dropdown-menu a {
+        display: block;
+        padding: 10px 16px;
+        color: var(--color-text-dark);
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .nav-dropdown-menu a:hover {
+        background: var(--bg-light);
+      }
+      @media (min-width: 900px) {
+        .nav-dropdown:hover .nav-dropdown-menu {
+          display: block;
+        }
+      }
+      .nav-dropdown.open .nav-dropdown-menu {
+        display: block;
+      }
+      .nav-arrow {
+        font-size: 0.8rem;
+        margin-left: 4px;
+      }
+    </style>
+
+    <!-- Date script (unchanged) -->
+    <script>
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      // Get the date one year from tomorrow
       const oneYearAhead = new Date(tomorrow);
       oneYearAhead.setFullYear(oneYearAhead.getFullYear() + 1);
 
-      /**
-       * Helper function to format date as YYYY-MM-DD
-       * @param {Date} date
-       */
       function formatDate(date) {
         const yyyy = date.getFullYear();
-        // Add 1 because getMonth() is 0-indexed
         const mm = String(date.getMonth() + 1).padStart(2, "0");
         const dd = String(date.getDate()).padStart(2, "0");
         return `${yyyy}-${mm}-${dd}`;
       }
 
-      // Store the formatted dates globally for easy access in your main script
       window.minBookingDate = formatDate(tomorrow);
       window.maxBookingDate = formatDate(oneYearAhead);
 
-      // Apply the min/max constraints directly to the input field
       document.addEventListener("DOMContentLoaded", function () {
         const dateInput = document.getElementById("date-modal");
         if (dateInput) {
@@ -48,64 +96,76 @@
       });
     </script>
   </head>
+
   <body>
     <header class="header">
       <div class="container header-content">
-        <a href="index.html" class="logo">
-          <div
-            class="logo-icon"
-            role="img"
-            aria-label="Alpha Hospital Logo"
-          ></div>
+        <a href="index.php" class="logo">
+          <div class="logo-icon" role="img" aria-label="Alpha Hospital Logo"></div>
           Alpha Hospital
         </a>
 
         <nav class="nav-menu" aria-label="Primary navigation">
-          <a href="index.html" class="nav-link active">Home</a>
+          <a href="index.php" class="nav-link active">Home</a>
           <a href="about.html" class="nav-link">About Us</a>
           <a href="#services" class="nav-link">Services</a>
-          <a href="#departments" class="nav-link">Departments</a>
+
+          <!-- B1: Original Departments link wrapped WITHOUT changes -->
+          <div class="nav-dropdown">
+            <a href="#" class="nav-link nav-dropdown-toggle">
+              Departments <span class="nav-arrow">▾</span>
+            </a>
+
+            <!-- Dynamic PHP Menu -->
+            <div class="nav-dropdown-menu">
+              <?php if (!empty($fachbereiche_liste)): ?>
+                <?php foreach ($fachbereiche_liste as $fachbereich): 
+                      $name = htmlspecialchars($fachbereich['name']);
+                      $id = (int)$fachbereich['abteilung_id'];
+                ?>
+                  <a href="abteilung_details.php?id=<?= $id ?>"><?= $name ?></a>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <a style="color:red;">Error loading departments</a>
+              <?php endif; ?>
+            </div>
+          </div>
+
           <a href="contact.html" class="nav-link">Contact</a>
         </nav>
 
-        <a href="#" class="btn btn-primary btn-book-appointment cta-btn-desktop"
-          >Book Appointment</a
-        >
+        <a href="admin_dashboard.php" class="btn btn-primary btn-book-appointment cta-btn-desktop">
+          login
+        </a>
 
-        <button
-          class="mobile-menu-btn"
-          id="mobileMenuBtn"
-          aria-label="Open menu"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M4 6h16M4 12h16M4 18h16"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
       </div>
 
       <div id="mobileNav" class="mobile-nav" aria-hidden="true">
         <div class="menu-links">
-          <a href="index.html">Home</a>
-          <a href="about.html">About Us</a>
-          <a href="#">Services</a>
-          <a href="#">Departments</a>
-          <a href="contact.html">Contact</a>
+          <a href="index.php">Home</a>
+          <a href="about.php">About Us</a>
+          <a href="#services">Services</a>
+
+          <!-- Mobile PHP department list (kept simple) -->
+          <strong style="margin-top:10px; display:block;">Departments</strong>
+          <?php foreach ($fachbereiche_liste as $f): ?>
+            <a href="abteilung_details.php?id=<?= (int)$f['abteilung_id'] ?>"
+               style="margin-left:10px;"><?= htmlspecialchars($f['name']) ?></a>
+          <?php endforeach; ?>
+
+          <a href="contact.php">Contact</a>
         </div>
       </div>
     </header>
 
+    <!-- START of the large HTML content from index.php -->
     <section class="full-hero">
       <div class="hero-content container">
         <h1 class="hero-main-title">
@@ -117,7 +177,6 @@
         </p>
       </div>
     </section>
-
     <main class="container main-content">
       <section class="main-card">
         <div class="hero-grid">
@@ -132,12 +191,12 @@
             </p>
 
             <div class="hero-cta">
-              <a class="btn btn-primary btn-book-appointment" href="#"
-                >Book Appointment Now</a
-              >
-              <a class="btn btn-outline-primary" href="contact.html"
-                >Contact Us</a
-              >
+              <a class="btn btn-primary btn-book-appointment" href="#">
+                Book Appointment Now
+              </a>
+              <a class="btn btn-outline-primary" href="contact.php">
+                Contact Us
+              </a>
             </div>
 
             <div class="feature-strip">
@@ -164,145 +223,60 @@
         </div>
       </section>
 
-      <!-- --- Sections Omitted for Brevity --- -->
-
+      <!-- Excellence in numbers -->
       <section
         class="secondary"
-        style="
-          background: var(--color-secondary);
-          padding-top: 5rem;
-          padding-bottom: 5rem;
-        "
+        style="background: var(--color-secondary); padding-top: 5rem; padding-bottom: 5rem;"
       >
         <h2 class="section-title">Excellence in Numbers</h2>
         <div
           class="cards-grid"
-          style="
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-          "
+          style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;"
         >
-          <div
-            class="info-card"
-            style="
-              text-align: center;
-              transform: none;
-              transition: none;
-              border: 2px solid var(--color-primary);
-            "
-          >
+          <div class="info-card" style="text-align:center; border:2px solid var(--color-primary);">
             <p
-              style="
-                font-size: 3.5rem;
-                font-weight: 800;
-                color: var(--color-primary);
-                margin: 0;
-              "
-            >
-              98.5%
-            </p>
+              style="font-size:3.5rem; font-weight:800; color:var(--color-primary); margin:0;"
+            >98.5%</p>
             <p
-              style="
-                margin-top: 0.5rem;
-                color: var(--color-text-dark);
-                font-weight: 600;
-              "
-            >
-              Patient Satisfaction
-            </p>
+              style="margin-top:0.5rem; font-weight:600;"
+            >Patient Satisfaction</p>
           </div>
 
-          <div
-            class="info-card"
-            style="
-              text-align: center;
-              transform: none;
-              transition: none;
-              border: 2px solid var(--color-primary);
-            "
-          >
+          <div class="info-card" style="text-align:center; border:2px solid var(--color-primary);">
             <p
-              style="
-                font-size: 3.5rem;
-                font-weight: 800;
-                color: var(--color-primary);
-                margin: 0;
-              "
-            >
-              5-Star
-            </p>
+              style="font-size:3.5rem; font-weight:800; color:var(--color-primary); margin:0;"
+            >5-Star</p>
             <p
-              style="
-                margin-top: 0.5rem;
-                color: var(--color-text-dark);
-                font-weight: 600;
-              "
-            >
-              Safety Rating
-            </p>
+              style="margin-top:0.5rem; font-weight:600;"
+            >Safety Rating</p>
           </div>
 
-          <div
-            class="info-card"
-            style="
-              text-align: center;
-              transform: none;
-              transition: none;
-              border: 2px solid var(--color-primary);
-            "
-          >
+          <div class="info-card" style="text-align:center; border:2px solid var(--color-primary);">
             <p
-              style="
-                font-size: 3.5rem;
-                font-weight: 800;
-                color: var(--color-primary);
-                margin: 0;
-              "
-            >
-              20+
-            </p>
+              style="font-size:3.5rem; font-weight:800; color:var(--color-primary); margin:0;"
+            >20+</p>
             <p
-              style="
-                margin-top: 0.5rem;
-                color: var(--color-text-dark);
-                font-weight: 600;
-              "
-            >
-              Years of Service
-            </p>
+              style="margin-top:0.5rem; font-weight:600;"
+            >Years of Service</p>
           </div>
         </div>
       </section>
 
+      <!-- Core Values -->
       <section class="secondary">
         <h2 class="section-title">The Alpha Difference: Our Core Values</h2>
         <p
           class="hero-lead"
-          style="text-align: center; max-width: 800px; margin: 0 auto 2.5rem"
+          style="text-align:center; max-width:800px; margin:0 auto 2.5rem;"
         >
           We build trust through clinical excellence, unwavering compassion, and
           ethical practice. Discover the values that guide every decision we
           make.
         </p>
-        <div
-          class="cards-grid"
-          style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))"
-        >
-          <article
-            class="info-card"
-            style="text-align: center; padding-top: 2rem"
-          >
-            <div
-              class="feature-icon"
-              aria-hidden="true"
-              style="
-                font-size: 3rem;
-                margin-bottom: 0.5rem;
-                color: var(--color-primary);
-              "
-            >
-              ❤️
-            </div>
+
+        <div class="cards-grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));">
+          <article class="info-card" style="text-align:center; padding-top:2rem;">
+            <div class="feature-icon" style="font-size:3rem; color:var(--color-primary);">❤️</div>
             <h3>Compassion First</h3>
             <p>
               We believe in treating every patient with empathy, respect, and
@@ -311,21 +285,8 @@
             </p>
           </article>
 
-          <article
-            class="info-card"
-            style="text-align: center; padding-top: 2rem"
-          >
-            <div
-              class="feature-icon"
-              aria-hidden="true"
-              style="
-                font-size: 3rem;
-                margin-bottom: 0.5rem;
-                color: var(--color-primary);
-              "
-            >
-              💡
-            </div>
+          <article class="info-card" style="text-align:center; padding-top:2rem;">
+            <div class="feature-icon" style="font-size:3rem; color:var(--color-primary);">💡</div>
             <h3>Clinical Innovation</h3>
             <p>
               We are committed to continuous learning and the rapid adoption of
@@ -334,21 +295,8 @@
             </p>
           </article>
 
-          <article
-            class="info-card"
-            style="text-align: center; padding-top: 2rem"
-          >
-            <div
-              class="feature-icon"
-              aria-hidden="true"
-              style="
-                font-size: 3rem;
-                margin-bottom: 0.5rem;
-                color: var(--color-primary);
-              "
-            >
-              🛡️
-            </div>
+          <article class="info-card" style="text-align:center; padding-top:2rem;">
+            <div class="feature-icon" style="font-size:3rem; color:var(--color-primary);">🛡️</div>
             <h3>Safety and Integrity</h3>
             <p>
               Patient safety is non-negotiable. We maintain the highest
@@ -359,6 +307,7 @@
         </div>
       </section>
 
+      <!-- Services -->
       <section class="secondary" id="services">
         <h2 class="section-title">Our Specialty Services</h2>
 
@@ -368,9 +317,7 @@
             <h3>Rapid Emergency Care</h3>
             <p>
               Our emergency department is staffed with skilled professionals,
-              ready to provide immediate and effective care 24/7. We deliver
-              rapid diagnostics and critical intervention, ensuring the fastest
-              possible response when every second counts.
+              ready to provide immediate and effective care 24/7.
             </p>
           </article>
 
@@ -379,9 +326,7 @@
             <h3>Advanced Surgical Suites</h3>
             <p>
               Equipped with cutting-edge technology, our operating rooms support
-              complex procedures with precision and safety. Our highly-trained
-              surgical teams perform everything from minimally invasive
-              surgeries to major life-saving operations.
+              complex procedures with precision and safety.
             </p>
           </article>
 
@@ -390,9 +335,7 @@
             <h3>Precision Diagnostics</h3>
             <p>
               We offer comprehensive imaging and lab services, including MRI,
-              CT, and X-ray, for fast and accurate diagnosis. Getting the right
-              answers quickly allows us to begin the most effective treatment
-              plan immediately.
+              CT, and X-ray, for fast and accurate diagnosis.
             </p>
           </article>
 
@@ -401,10 +344,7 @@
             <h3>Advanced Medical Expertise</h3>
             <p>
               Access our world-class Specialized Medical Care, featuring
-              dedicated units in Cardiology, Oncology, Neurology, and more. Our
-              board-certified specialists utilize the latest treatments to
-              tackle complex illnesses, ensuring you receive focused and expert
-              care exactly when you need it.
+              dedicated units in Cardiology, Oncology, Neurology, and more.
             </p>
           </article>
 
@@ -412,10 +352,8 @@
             <img src="images/img10.jpg" alt="Recovery and wellness" />
             <h3>Recovery and Wellness</h3>
             <p>
-              Our Rehabilitation and Therapy Services are vital steps on the
-              road to recovery. Through personalized Physical, Occupational, and
-              Speech Therapy, we help patients regain strength, mobility, and
-              independence to confidently return to their daily lives.
+              Our Rehabilitation and Therapy Services help patients regain
+              strength, mobility, and independence.
             </p>
           </article>
 
@@ -423,16 +361,13 @@
             <img src="images/img11.jpg" alt="Mind and body health" />
             <h3>Mind and Body Health</h3>
             <p>
-              We offer comprehensive Mental and Behavioral Health Services,
-              including confidential inpatient support and outpatient counseling
-              for depression, anxiety, and substance use disorders. We treat the
-              whole person, recognizing that mental health is foundational to
-              physical well-being.
+              Mental and Behavioral Health Services for depression, anxiety,
+              and substance use disorders.
             </p>
           </article>
         </div>
       </section>
-
+      <!-- Featured Physicians -->
       <section class="secondary">
         <h2 class="section-title">Meet Our Featured Physicians</h2>
         <p
@@ -554,6 +489,7 @@
         </div>
       </section>
 
+      <!-- Patient Testimonials -->
       <section class="secondary">
         <h2 class="section-title">What Our Patients Say</h2>
         <div
@@ -616,6 +552,7 @@
         </div>
       </section>
 
+      <!-- Community Impact -->
       <section class="secondary">
         <h2 class="section-title">Our Community Impact</h2>
         <div
@@ -664,6 +601,7 @@
         </div>
       </section>
 
+      <!-- News -->
       <section
         class="secondary"
         style="
@@ -689,7 +627,7 @@
             <img
               src="images/news-1.jpg"
               alt="Image of a running shoe"
-              style="height: 200px"
+              style="height: 200px; object-fit: cover;"
             />
             <p
               style="
@@ -700,7 +638,7 @@
             >
               MAY 10, 2025 | WELLNESS
             </p>
-            <h3>5 Tips for Starting a Joint-Friendly Running Routine</h3>
+            <h3>5 Tips for Starting a Joint-Friendly Running Routine</hh3>
             <a
               class="btn btn-secondary"
               style="padding: 0.5rem 1rem; font-size: 0.9rem"
@@ -713,7 +651,7 @@
             <img
               src="images/news-2.jpg"
               alt="Image of two scientists working"
-              style="height: 200px"
+              style="height: 200px; object-fit: cover;"
             />
             <p
               style="
@@ -737,7 +675,7 @@
             <img
               src="images/news-3.jpg"
               alt="Image of a blood pressure monitor"
-              style="height: 200px"
+              style="height: 200px; object-fit: cover;"
             />
             <p
               style="
@@ -759,6 +697,7 @@
         </div>
       </section>
 
+      <!-- Departments section -->
       <section class="secondary" id="departments">
         <h2 class="section-title">Ready for Advanced, Compassionate Care?</h2>
         <div
@@ -776,8 +715,7 @@
           <div style="text-align: center">
             <p class="hero-lead">
               Whether you're scheduling a routine visit or facing an emergency,
-              we are here for you 24/7. Find our main campus or speak with a
-              specialist today.
+              we are here for you 24/7.
             </p>
             <div
               class="hero-cta"
@@ -786,7 +724,7 @@
               <a class="btn btn-primary btn-book-appointment" href="#"
                 >Book Online</a
               >
-              <a class="btn btn-secondary" href="contact.html"
+              <a class="btn btn-secondary" href="contact.php"
                 >See All Locations</a
               >
             </div>
@@ -830,6 +768,7 @@
       </section>
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer" aria-label="Footer">
       <div class="container footer-grid">
         <div>
@@ -863,108 +802,64 @@
       </div>
     </footer>
 
-    <!-- APPOINTMENT OVERLAY MODAL -->
-    <div id="appointmentOverlay" class="appointment-overlay">
-      <div class="appointment-overlay-content">
-        <button id="closeAppointment" class="close-btn" aria-label="Close">
-          &times;
-        </button>
-        <h2>Book an Appointment</h2>
-        <form class="book-form" id="appointmentForm">
-          <div class="name-group">
-            <div class="form-row">
-              <label for="first-name">First Name</label>
-              <input
-                type="text"
-                id="first-name"
-                placeholder="z.B. John"
-                data-required="true"
-              />
-            </div>
-            <div class="form-row">
-              <label for="last-name">Last Name</label>
-              <input
-                type="text"
-                id="last-name"
-                placeholder="z.B. Doe"
-                data-required="true"
-              />
-            </div>
-          </div>
-          <div class="form-row">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="z.B. jdoe34@gmail.com"
-              data-required="true"
-            />
-          </div>
-          <div class="form-row">
-            <label for="phone-modal">Phone</label>
-            <input
-              type="tel"
-              id="phone-modal"
-              placeholder="(555) 555-5555"
-              data-required="true"
-            />
-          </div>
 
-          <div class="datetime-group">
-            <div class="form-row">
-              <label for="date-modal">Date</label>
-              <input type="date" id="date-modal" data-required="true" />
-            </div>
-            <!-- Time (New Select Field) -->
-            <div class="form-row">
-              <label
-                for="time-modal"
-                class="block text-sm font-medium text-gray-700 mb-1"
-                >Preferred Time</label
-              >
-              <select
-                id="time-modal"
-                name="time"
-                data-required="true"
-                class="w-full border-gray-300 rounded-lg shadow-sm p-3 focus:ring-emerald-500 focus:border-emerald-500"
-                aria-required="true"
-              >
-                <!-- Options populated by JavaScript -->
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <label for="department">Department</label>
-            <select id="department" data-required="true">
-              <option value="">--- Select Department ---</option>
-              <option>Emergency</option>
-              <option>Pediatrics</option>
-              <option>Surgery</option>
-              <option>Cardiology</option>
-            </select>
-          </div>
-          <div class="form-row"></div>
-
-          <div class="form-row" style="grid-column: 1 / -1">
-            <label for="message-modal">Reason for Visit</label>
-            <textarea
-              id="message-modal"
-              placeholder="Briefly describe your reason for booking this appointment."
-              data-required="true"
-            ></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button class="btn btn-primary" type="submit">Book Now</button>
-          </div>
-        </form>
       </div>
     </div>
+
     <div id="toastNotification" class="toast">
       Appointment requested successfully!
     </div>
 
     <script src="script.js"></script>
+    <script>
+document.getElementById("department-modal").addEventListener("change", function () {
+    let depId = this.value;
+
+    fetch("load_doctors.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "department_id=" + depId
+    })
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById("doctor-modal").innerHTML = data;
+    });
+});
+
+// --- Submit Form with Validation + DB Saving ---
+document.getElementById("appointmentForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // Keep your script.js validation system
+    const requiredFields = document.querySelectorAll("[data-required='true']");
+    for (let field of requiredFields) {
+        if (!field.value.trim()) {
+            field.classList.add("input-error");
+            return; 
+        } else {
+            field.classList.remove("input-error");
+        }
+    }
+
+    let formData = new FormData(this);
+
+    fetch("save_appointment.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.text())
+    .then(response => {
+        document.getElementById("toastNotification").textContent =
+            "Appointment booked successfully!";
+        document.getElementById("toastNotification").classList.add("show");
+
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    });
+});
+</script>
+
+
   </body>
 </html>
