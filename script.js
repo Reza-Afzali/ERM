@@ -1,5 +1,43 @@
 document.addEventListener("DOMContentLoaded", function () {
-  
+        // -------------------------------
+        // Dynamic Doctors Loader (NEW)
+        // -------------------------------
+        const deptSelect = document.getElementById("department");
+        const doctorSelect = document.getElementById("doctor");
+
+        if (deptSelect && doctorSelect) {
+            deptSelect.addEventListener("change", function () {
+                const deptId = this.value;
+
+                // Reset dropdown while loading
+                doctorSelect.innerHTML = "<option value=''>Loading...</option>";
+
+                if (!deptId) {
+                    doctorSelect.innerHTML = "<option value=''>--- Select Doctor ---</option>";
+                    return;
+                }
+
+                fetch("fetch_doctors.php?abteilung_id=" + deptId)
+                    .then(response => response.json())
+                    .then(data => {
+                        doctorSelect.innerHTML = "<option value=''>--- Select Doctor ---</option>";
+
+                        data.forEach(doctor => {
+                            const fullName = `${doctor.titel} ${doctor.vorname} ${doctor.nachname}`;
+                            const option = document.createElement("option");
+                            option.value = doctor.arzt_id;
+                            option.textContent = fullName;
+                            doctorSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        doctorSelect.innerHTML = "<option value=''>Error loading doctors</option>";
+                        console.error("Error fetching doctors:", error);
+                    });
+            });
+        }
+
+
         // --- Global Date Calculation ---
         /**
          * Helper function to format date as YYYY-MM-DD
@@ -46,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Start time: 9:00 AM (9 * 60 minutes)
             let time = 9 * 60; 
-            // End time: 5:00 PM (17 * 60 minutes) - inclusive of the 5:00 PM slot if needed, 
+            // End time: 5:00 PM (17 * 60 minutes) - inclusive of the 5:00 PM slot if needed,
             // but we stop before 5:30 PM slot. Let's make it 5:00 PM slot is the last.
             const endTime = 17 * 60; 
             const interval = 30; // 30 minutes
@@ -67,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const displayTime = `${displayHours === 0 ? 12 : displayHours}:${formattedMinutes} ${ampm}`;
 
                 const option = document.createElement('option');
-                option.value = time24h; // Value uses 24h format for submission
+                option.value = time24h; // Value uses 24h format for submission 
                 option.textContent = displayTime;
                 
                 selectElement.appendChild(option);
@@ -256,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (selectedDate < minDate) {
                     isValid = false;
                     errorMessage = 'Booking must be at least one day in advance.';
-                } else if (selectedDate > maxDate) {
+                } else if (selectedDate > maxBookingDateString) {
                     isValid = false;
                     errorMessage = `Booking is only available until ${maxBookingDateString}.`;
                 }
@@ -352,4 +390,4 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         });
-    });
+});
